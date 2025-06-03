@@ -10,9 +10,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Generated App',
       theme: ThemeData(
+        primarySwatch: Colors.blue,
         primaryColor: const Color(0xFF2196f3),
-        canvasColor: const Color(0xFFfafafa), colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(secondary: const Color(0xFF2196f3)),
-        
+        hintColor: const Color(0xFF2196f3),
+        canvasColor: const Color(0xFFfafafa),
       ),
       home: MyHomePage(),
     );
@@ -26,102 +27,69 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static var _message ="ok";
+  static final _controller = TextEditingController();
     @override
     Widget build(BuildContext context) {
       return Scaffold(
         appBar: AppBar(
           title: Text('App Name'),
-          backgroundColor: Colors.blue[200],
           ),
         body:
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-              "qWerty1",
-                style: TextStyle(fontSize:34.0,
-                color: const Color(0xFF000000),
-                fontWeight: FontWeight.w200,
-                fontFamily: "Roboto"),
-              ),
-    
-              Text(
-              "qWerty1",
-                style: TextStyle(fontSize:33.0,
-                color: const Color(0xFF000000),
-                fontWeight: FontWeight.w200,
-                fontFamily: "Roboto"),
-              ),
-    
-              Text(
-              "qWerty1",
-                style: TextStyle(fontSize:34.0,
-                color: const Color(0xFF000000),
-                fontWeight: FontWeight.w200,
-                fontFamily: "Roboto"),
-              ),
-    
-              Text(
-              "qWerty1",
-                style: TextStyle(fontSize:33.0,
-                color: const Color(0xFF000000),
-                fontWeight: FontWeight.w200,
-                fontFamily: "Roboto"),
-              ),
-    
-              Row(
+          Center(
+            child:
+              Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                  "qWerty1",
+                  _message,
                     style: TextStyle(fontSize:12.0,
                     color: const Color(0xFF000000),
                     fontWeight: FontWeight.w200,
                     fontFamily: "Roboto"),
                   ),
     
-                  Text(
-                  "qWerty1",
+                  TextField(
+                    controller:_controller,
                     style: TextStyle(fontSize:12.0,
                     color: const Color(0xFF000000),
                     fontWeight: FontWeight.w200,
                     fontFamily: "Roboto"),
+                    onChanged:textChanged,
                   ),
     
-                  Text(
-                  "qWerty1",
-                    style: TextStyle(fontSize:12.0,
-                    color: const Color(0xFF000000),
-                    fontWeight: FontWeight.w200,
-                    fontFamily: "Roboto"),
+                  ElevatedButton(key:null, onPressed:buttonPressed,
+                    
+                    child:
+                      Padding(padding:EdgeInsets.all(10.0),
+                      child:Icon(
+                        Icons.android,
+                        size:50.0
+                      ),
+                      )
                   ),
-    
-                  Text(
-                  "qWerty1",
-                    style: TextStyle(fontSize:12.0,
-                    color: const Color(0xFF000000),
-                    fontWeight: FontWeight.w200,
-                    fontFamily: "Roboto"),
-                  ),
-    
-                  Text(
-                  "qWerty1",
-                    style: TextStyle(fontSize:12.0,
-                    color: const Color(0xFF000000),
-                    fontWeight: FontWeight.w200,
-                    fontFamily: "Roboto"),
-                  )
+                      
+                    
                 ]
     
-              )
-            ]
+              ),
     
           ),
     
       );
     }
+    void buttonPressed(){
+      setState((){
+        _message = "you said: ${_controller.text}";
+      });
+    }
+
+    void textChanged(String val){
+      setState((){
+        _message = val.toUpperCase();
+      });
+    }
+    
 }
