@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 void main() {
   runApp(MyApp());
 }
@@ -12,106 +11,80 @@ class MyApp extends StatelessWidget {
       title: 'Generated App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        primaryColor: const Color(0xFF2196f3),
-        hintColor: const Color(0xFF2196f3),
-        canvasColor: const Color(0xFFfafafa),
+        primaryColor: const Color(0xff2196f3),
+        canvasColor: const Color(0xfffafafa),
       ),
-      home: MyHomePage(),
+      home: FirstScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key}) : super(key: key);
+// １つ目のスクリーン
+class FirstScreen extends StatelessWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+      body: Center(
+        child: Container(
+          child: const Text('Home Screen',
+              style: const TextStyle(fontSize: 32.0)),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1,
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
+            label: 'Home',
+            icon: const Icon(Icons.home, size:32),
+          ),
+          const BottomNavigationBarItem(
+            label: 'next',
+            icon: const Icon(Icons.navigate_next, size:32),
+          ),
+        ],
+        onTap: (int value) {
+          if (value == 1)
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context)=>SecondScreen()),
+            );
+        },
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  static var _message = "ok";
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('App Name'),
+// ２つ目のスクリーン
+class SecondScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Next"),
+      ),
+      body: Center(
+        child: const Text('Next Screen',
+            style:const TextStyle(fontSize: 32.0)),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
+            label: 'prev',
+            icon: const Icon(Icons.navigate_before, size:32),
           ),
-        body:
-          Center(
-            child:
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child:
-                      Text(
-                      _message,
-                        style: TextStyle(fontSize:33.0,
-                        color: const Color(0xFF000000),
-                        fontWeight: FontWeight.w200,
-                        fontFamily: "Roboto"),
-                      ),
-                  ),
-    
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                  ),
-    
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child:
-                      ElevatedButton(key:null, 
-                      onPressed:buttonPressed,
-                        child:
-                          Text(
-                          "tap me!",
-                            
-                            style: TextStyle(fontSize:32.0,
-                            color: const Color(0xFF000000),
-                            fontWeight: FontWeight.w200,
-                            fontFamily: "Roboto"),
-                          )
-                        ),
-    
-                    
-                  )
-                ]
-    
-              ),
-    
+          const BottomNavigationBarItem(
+            label: '?',
+            icon: const Icon(Icons.android, size:32),
           ),
-    
-      );
-    }
-    void buttonPressed(){
-      showDialog(
-        context:context,
-        builder:(BuildContext context)=>SimpleDialog(
-          title:Text("Select assignment"),
-          children:<Widget>[
-            SimpleDialogOption(
-              onPressed: ()=>Navigator.pop<String>(context,"One"),
-              child:const Text("One"),
-            ),
-            SimpleDialogOption(
-              onPressed: ()=>Navigator.pop<String>(context,"Two"),
-              child:const Text("Two"),
-            ),
-            SimpleDialogOption(
-              onPressed: ()=>Navigator.pop<String>(context,"Three"),
-              child:const Text("Three"),
-            ),
-          ]
-          )
-      ).then<void>((value)=>resultAlert(value));
-    }
-    
-    void resultAlert(String value){
-      setState((){
-        _message = 'selected:$value';
-      });
-    }
-
+        ],
+        onTap: (int value) {
+          if (value == 0) Navigator.pop(context);
+        },
+      ),
+    );
+  }
 }
