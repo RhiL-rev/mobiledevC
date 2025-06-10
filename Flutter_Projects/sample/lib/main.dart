@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: const Color(0xff2196f3),
-        canvasColor: const Color(0xfffafafa),
+        canvasColor: const Color.fromARGB(255, 250, 250, 250),
       ),
       home: FirstScreen(),
     );
