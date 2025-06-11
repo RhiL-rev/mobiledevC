@@ -31,8 +31,11 @@ class MyHomePage extends StatefulWidget {
 
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Widget> tasks =<ListTile>[];
+  Map<int,ListTile> tasks ={};
+  
   static final _controller = TextEditingController();
+  int id=1;
+  int index_id =0;
   
     @override
     Widget build(BuildContext context) {
@@ -85,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ListView(
             shrinkWrap: true,
             padding:const EdgeInsets.all(20.0),
-            children: tasks
+            children: getlist()
             )
     
       );
@@ -93,29 +96,45 @@ class _MyHomePageState extends State<MyHomePage> {
     void checkChanged(bool ischanged){
       
     }
+    List<Widget> getlist(){
+      
+      List<Widget> ret=[];
+      if(tasks.isEmpty){
+        return ret;
+      }
+      tasks.forEach((id,tile){
+        ret.add(tile);
+      });
+      return ret;
+    }
 
     void resultAlert(bool addTask){
-
+      var listid = id;
+      id++;
       if(addTask){
         
-          tasks.add(
-          ListTile(
+          tasks.addEntries([MapEntry(
+            listid,
             
+          ListTile(
+            key:Key(id.toString()),
             leading: Icon(Icons.check_box_outline_blank),
             title:Text(_controller.text),
             selected: false,
-            onTap:()=>{
+            onTap:((){onTapped(listid);})
               
-            })
-            
-
-
+            )
+          )]
           );
+
         }
-        
-        
-      
-      
+
+    }
+
+    void onTapped(int index){
+      tasks.forEach((key,value){
+        if(key==index)
+      });
     }
     
 }
