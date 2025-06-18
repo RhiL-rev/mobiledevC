@@ -46,11 +46,12 @@ class FirstScreen extends StatelessWidget {
           ),
         ],
         onTap: (int value) {
-          if (value == 1)
+          if (value == 1){
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context)=>SecondScreen()),
             );
+          }
         },
       ),
     );

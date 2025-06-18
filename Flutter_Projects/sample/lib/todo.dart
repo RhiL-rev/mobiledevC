@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<CheckList> tasks= [];
   
   static final _controller = TextEditingController();
-  int id=1;
+
   int index_id =0;
   
     @override
@@ -45,22 +44,32 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: const Color(0xFF2196f3),
           surfaceTintColor: const Color(0xFF2196f3),
           ),
+        body:
+          ListView(
+            shrinkWrap: true,
+            padding:const EdgeInsets.all(20.0),
+            children: tasks
+            ,
+            ),
         floatingActionButton: FloatingActionButton(
           child:Icon(Icons.add),
           onPressed:(){
             _controller.text="";
             showDialog(
             context:context,
-            builder:(BuildContext context)=>AlertDialog(
-    
-            title:Text("Add Task"),
-            content:const Text("Details"),
+            builder:(BuildContext context){return StatefulBuilder(
+            builder: (context, setState) {return AlertDialog(
+              
+            title:Text("Add Task",style:TextStyle(
+              fontSize:20.0,
+            )),
+            content:const Text("Details",style:TextStyle(fontSize: 15.0)),
             actions:<Widget>[
               Column(children: [
                 TextField(
                   controller:_controller,
                   style:TextStyle(
-                  fontSize:20.0,
+                  fontSize:15.0,
                    color:Colors.black,
                    fontWeight: FontWeight.w200,
                    fontFamily: "Roboto"
@@ -81,15 +90,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ])
       
             ]
-            )
-          ).then<void>((value)=>setState((){resultAlert(value);})); }
-          ),
-        body:
-          ListView(
-            shrinkWrap: true,
-            padding:const EdgeInsets.all(20.0),
-            children: tasks
-            )
+            );}
+          );}
+          ).then<void>((value){
+            setState((){resultAlert(value);});});})
+          
+          
+        
     
       );
     }
@@ -105,16 +112,12 @@ class _MyHomePageState extends State<MyHomePage> {
           tasks.add(CheckList(
             title:_controller.text,
           ));
-          
+          setState((){});
 
         }
-
+      
     }
 
-    void Oc(bool? check){
-      check ??= false;
-      check = !check;
-    }
     
   
 }
@@ -123,6 +126,7 @@ class CheckList extends StatefulWidget{
   const CheckList({
       super.key,
       required this.title,
+      
       
   });
   final String title;
@@ -133,16 +137,21 @@ class CheckList extends StatefulWidget{
 
 class CheckTile extends State<CheckList>{
   bool isChecked = false;
+  var TextStyle_active = TextStyle(color: Colors.black,);
+  var TextStyle_deactive = TextStyle(color:Colors.grey,decoration:TextDecoration.lineThrough);
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
-      title: Text(widget.title),// コンストラクタで受け取ったtitleを指定
+      title: Text(widget.title,style: isChecked? TextStyle_deactive:TextStyle_active),// コンストラクタで受け取ったtitleを指定
       value: isChecked,
       onChanged: (value) => setState(() {
         isChecked = value!;
+        
       }),
       controlAffinity: ListTileControlAffinity.leading,
+      
       // コンストラクタで受け取ったtitleを指定
     );
   }
+  
 }
