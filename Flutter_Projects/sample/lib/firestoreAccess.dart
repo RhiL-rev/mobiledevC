@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
-import 'dart:convert';
-import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,9 +39,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _controller = TextEditingController();
-  static const host = 'baconipsum.com';
-  static const path = '/api/?type=meat-and-filler&paras=1&format=text';
-  static const url = 'https://baconipsum.com/api/?type=meat-and-filler&paras=1&format=text';
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.open_in_new),
         onPressed: () {
-          fire();
+          addDoc();
           showDialog(
               context: context,
               builder: (BuildContext context) => AlertDialog(
@@ -83,18 +80,26 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void getData() async {
-    var https = await HttpClient();
-    HttpClientRequest request = await https.getUrl(Uri.parse(url));
-    HttpClientResponse response = await request.close();
-    final value = await response.transform(utf8.decoder).join();
-    _controller.text = value;
+  void addDoc() async{
+    var msg = _controller.text;
+    final input =msg.split(',');
+    final data ={
+      'name': input[0],
+      'mail': input[1],
+      'age': input[2]
+    };
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final snapshot = await firestore.collection('mydata').add(data);
+    fire();
   }
 
   void fire() async {
+    var msg = _controller.text;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final snapshot = await firestore.collection('mydata').get();
-  var msg = '';
+  final snapshot = await firestore.collection('mydata')
+  .orderBy('name',descending:false)
+  .get();
+  msg ="";
   snapshot.docChanges.forEach((element) {
     final name = element.doc.get('name');
     final mail = element.doc.get('mail');
@@ -103,5 +108,14 @@ class _MyHomePageState extends State<MyHomePage> {
   });
   _controller.text = msg;
   }
+
+  /*Future<UserCredential> signInWithGoogle() async{
+    
+    final GoogleSignInAccount?
+    //version?
+      googleUser = await GoogleSignIn().authenticate();
+    final GoogleSignInAuthentication?
+      googleAuth = await googleUser?.authentication;
+  }*/
 
 }
