@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
-import 'dart:ffi';
-import 'dart:math';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
-class MyApp extends StatelessWidget {
 
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Generated App',
-      theme: new ThemeData(
-        primaryColor: const Color(0xFF3f51b5),
-        canvasColor: const Color(0xFFfafafa),
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.indigo).copyWith(secondary: const Color(0xFF3f51b5)),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
@@ -26,114 +22,189 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static var time = DateTime.now();
-  static List<Data> items =[];
-
+  final TextEditingController _controller = TextEditingController();
+  var time = DateTime.now();
+  int idg = 1;
+  static List<ToDoElement> tlist = [];
   @override
   void initState() {
     super.initState();
     Timer.periodic(Duration(seconds: 1), _onTimer);
   }
 
-    @override
-    Widget build(BuildContext context) {
-      return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Deadline Visualizer'),
-          foregroundColor: const Color(0xFFfafafa),
-          backgroundColor: const Color(0xFF3f51b5),
-          shadowColor: Colors.grey,
-          
-          ),
-        body:
-          ListView.builder(itemCount: items.length,
-          itemBuilder: (BuildContext context, int index) {
-          return Dismissible(
-            // background: スワイプ時の背景
-            background: Container(
-              color: Colors.greenAccent,
-              child: const Align(
-                  alignment: Alignment.center, child: Icon(Icons.check)),
-            ),
-
-            // onDismissed: ウィジェットが閉じられたときに呼び出される
-            onDismissed: (DismissDirection direction) {
-              setState(() {
-                // スワイプしたリストのアイテムを削除
-                items.removeAt(index);
-              });
-            },
-
-            // key: 表示するリストアイテムにキーを付与し、正常にアイテムが置き換わるようにする
-            key: ValueKey<int>(index),
-
-            // child: 表示するリストアイテム
-            child: ListTile(
-              title: Text('Item ${items[index]}'),
-              
-            ),
-          );
-      },
-    ),
-    
-        floatingActionButton: new FloatingActionButton(
-          child: new Icon(Icons.add_circle),
-          onPressed: fabPressed),
-        bottomNavigationBar: new BottomNavigationBar(
-          items: [
-            new BottomNavigationBarItem(
-              icon: const Icon(Icons.assignment),
-              label: 'Tasks',
-            ),
-    
-            new BottomNavigationBarItem(
-              icon: const Icon(Icons.tune),
-              label: 'Settings',
-            )
-          ]
-    
-        ),
-      );
-    }
-    void fabPressed() async {
-      final pickedDate = await showDatePicker(
-       context: context,
-       initialDate: DateTime.now(),
-       firstDate: DateTime(2000),
-       lastDate: DateTime(2100));
-       if (pickedDate == null) return;
-
-
-   // showTimePickerで時間を選択する
-      if (!context.mounted) return;
-      final pickedTime =
-       await showTimePicker(context: context, initialTime: TimeOfDay.now());
-
-
-   // 時間が選択されなかった場合は早期return
-    if (pickedTime == null) return;
-
-
-   // 選択した日付と時間を結合する
-      final dateTime = DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
-       pickedTime.hour, pickedTime.minute);
-    }
-  
-    
-  void _onTimer(Timer timer){
-    time = DateTime.now();
+  void _onTimer(Timer timer) {
+    var new_time = DateTime.now();
+    setState(() {
+      time = new_time;
+    });
   }
 
-    
-}
-class Data{
-  String _task;
-  DateTime _dateTime;
-  Data(this._task,this._dateTime):super();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Task Remaining Time Visualizer'),
+      ),
+      body: Center(
+        child: ListView.builder(
+            itemCount: tlist.length,
+            itemBuilder: (BuildContext context, int index) {
+              return tlist[index];
+            }),
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add_circle), onPressed: fabPressed),
+    );
+  }
+
+  void fabPressed() async {
+    DateTime? lt;
+    _controller.text = "";
+    String tmptxt = "";
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('タスク名を入力してください'),
+        content: TextField(
+          onChanged: (value) {
+            setState(() {
+              tmptxt = value;
+            });
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _controller.text = tmptxt;
+              });
+              Navigator.pop(context);
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+    String st = _controller.text;
+    DateTime? dy = await showDatePicker(
+        context: context,
+        initialDate: time,
+        firstDate: new DateTime(2020),
+        lastDate: new DateTime.now().add(new Duration(days: 360)));
+    if (dy == null) {
+      return;
+    }
+    TimeOfDay? hm = await showTimePicker(
+        context: context, initialTime: TimeOfDay(hour: 0, minute: 0));
+    if (hm == null) {
+      return;
+    }
+
+    lt = DateTime(dy.year, dy.month, dy.day, hm.hour, hm.minute);
+    tlist.add(ToDoElement(
+      id: idg,
+      name: st,
+      timelimit: lt,
+      tlist: tlist,
+    ));
+    tlist.sort((a, b) => a.timelimit.compareTo(b.timelimit));
+    idg++;
+
+    setState(() {});
+  }
 }
 
+class ToDoElement extends StatefulWidget {
+  final int id;
+  final String name;
+  final DateTime timelimit;
+  final List<Widget> tlist;
 
+  ToDoElement({
+    required this.id,
+    required this.name,
+    required this.timelimit,
+    required this.tlist,
+  });
+  // TODO: implement key
+  Key? get key => ValueKey(id);
+  @override
+  _ToDoElementState createState() => _ToDoElementState();
+}
+
+class _ToDoElementState extends State<ToDoElement> {
+  DateTime nowtime = DateTime.now();
+  String showstring = "";
+  Timer? tmr;
+  @override
+  void initState() {
+    super.initState();
+    tmr = Timer.periodic(Duration(seconds: 1), update);
+  }
+
+  void update(Timer timer) {
+    setState(() {
+      nowtime = DateTime.now();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: ListTile(
+            title: Text(widget.name),
+            isThreeLine: true,
+            tileColor: (widget.timelimit.millisecondsSinceEpoch >
+                    nowtime.millisecondsSinceEpoch)
+                ? Colors.white
+                : Colors.red,
+            subtitle: (widget.timelimit.millisecondsSinceEpoch >
+                    nowtime.millisecondsSinceEpoch)
+                ? Text("Remaining Time:" +
+                    DateFormat('dd日HH:mm:ss').format(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            widget.timelimit.millisecondsSinceEpoch -
+                                nowtime.millisecondsSinceEpoch))+"\nTimeLimit:"
+                                +DateFormat("MM月dd日HH時mm分").format(widget.timelimit))
+                : Text("Excess Time:" +
+                    DateFormat('dd日HH:mm:ss').format(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            nowtime.millisecondsSinceEpoch - widget.timelimit.millisecondsSinceEpoch))+"\nTimeLimit:"
+                                +DateFormat("MM月dd日HH時mm分").format(widget.timelimit)),
+            onLongPress: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: Text('Delete Task?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('キャンセル'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            tmr?.cancel();
+                            widget.tlist.remove(
+                                widget.tlist[widget.tlist.indexOf(widget)]);
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                )));
+  }
+}
